@@ -1,3 +1,6 @@
+### **<a href="#mount"><kbd>Mount</kbd></a>  <a href="#grub"><kbd>Grub</kbd></a> <a href="#zram"><kbd>ZRAM</kbd></a> <a href="#kvm"><kbd>KVM</kbd></a>**
+
+
 # ==**Install Arch Linux**==
 
 ##### ***Update system clock***
@@ -70,7 +73,7 @@ btrfs subvolume create /mnt/@log
 btrfs subvolume create /mnt/@tmp
 ```
 
-##### *Mount subvolumes*
+##### <a id="mount"></a> *Mount subvolumes*
 
 Unmount the root partition ...
 
@@ -242,7 +245,7 @@ Add `btrfs` support to mount the root filesystem ...
 MODULES=(btrfs)
 ```
 
-##### *Boot loader: GRUB*
+##### <a id="grub"></a> *Boot loader: GRUB*
 
 Install ...
 
@@ -317,7 +320,7 @@ makepkg -si
 
 
 
-# ==ZRAM swap on Arch Linux==
+# <a id="zram"></a> ==ZRAM swap on Arch Linux==
 
 Swap space can take the form of a disk partition or a file. Users may create a swap space during installation or at any later time as desired. Swap space can be used for two purposes, to extend the virtual memory beyond the installed physical memory (RAM), and also for [suspend-to-disk](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate "Power management/Suspend and hibernate") support.
 
@@ -398,7 +401,7 @@ echo 8:3 > /sys/power/resume
 If using a swap file, additionally follow the procedures in [#Acquire swap file offset](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Acquire_swap_file_offset).
 
 
-# ==Virtualization using KVM + QEMU + libvirt==
+# <a id="kvm"></a> ==Virtualization using KVM + QEMU + libvirt==
 
 [KVM](https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine) (Kernel-based Virtual Machine) is built into the Linux kernel and handles the CPU and memory details. [QEMU](https://en.wikipedia.org/wiki/QEMU) (Quick EMUlator) emulates the various hardware components of a physical machine. Finally, [libvirt](https://wiki.archlinux.org/title/Libvirt) provides the tools for creating and managing VMs. I use `virt-manager` and `virsh` as graphical and console interfaces respectively.
 
