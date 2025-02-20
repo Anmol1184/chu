@@ -1,5 +1,8 @@
-### **<a href="#mount"><kbd>Mount</kbd></a>  <a href="#grub"><kbd>Grub</kbd></a> <a href="#zram"><kbd>ZRAM</kbd></a> <a href="#kvm"><kbd>KVM</kbd></a>**
-
+&ensp;[<kbd> <br> Mount <br> </kbd>](#mount)&ensp;
+&ensp;[<kbd> <br> Grub <br> </kbd>](#grub)&ensp;
+&ensp;[<kbd> <br> ZRAM <br> </kbd>](#zram)&ensp;
+&ensp;[<kbd> <br> KVM <br> </kbd>](#kvm)&ensp;
+&ensp;
 
 # ==**Install Arch Linux**==
 
