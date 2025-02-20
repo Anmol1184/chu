@@ -1,4 +1,4 @@
-# ==**Install Arch Linux**==
+# **Install Arch Linux**
 
 ##### ***Update system clock***
 
