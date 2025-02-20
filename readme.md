@@ -1,4 +1,4 @@
-# **Install Arch Linux**
+# ==**Install Arch Linux**==
 
 ##### ***Update system clock***
 
@@ -402,3 +402,28 @@ If using a swap file, additionally follow the procedures in [#Acquire swap file 
 
 [KVM](https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine) (Kernel-based Virtual Machine) is built into the Linux kernel and handles the CPU and memory details. [QEMU](https://en.wikipedia.org/wiki/QEMU) (Quick EMUlator) emulates the various hardware components of a physical machine. Finally, [libvirt](https://wiki.archlinux.org/title/Libvirt) provides the tools for creating and managing VMs. I use `virt-manager` and `virsh` as graphical and console interfaces respectively.
 
+##### *Install QEMU, libvirt, viewers, and tools*
+
+```
+sudo pacman -S qemu-full qemu-img libvirt virt-install virt-manager virt-viewer edk2-ovmf dnsmasq swtpm guestfs-tools libosinfo tuned
+```
+
+##### *Enable the libvirt daemon*
+
+```shell
+sudo systemctl enable libvirtd.service
+```
+
+##### *Verify Host Virtualization*
+
+```shell
+sudo virt-host-validate qemu
+```
+
+If you receive warnings, proceed to their respective sections. Re-run the above command to check your changes.
+
+##### *start the default network*
+
+```shell
+sudo virsh net-start default
+```
