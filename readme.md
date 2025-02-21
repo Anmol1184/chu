@@ -4,6 +4,8 @@
 &ensp;[<kbd> <br> KVM <br> </kbd>](#kvm)&ensp;
 &ensp;
 
+---
+
 # ==**Install Arch Linux**==
 
 ##### ***Update system clock***
@@ -13,6 +15,7 @@ timedatectl set-ntp true
 timedatectl status
 ```
 
+---
 ##### *Set disk for install*
 
 Identify the internal storage device where Arch Linux will be installed by running `lsblk -f`.
@@ -24,15 +27,17 @@ Layout for a single SSD with a GPT partition table that contains two partitions:
 - Partition 1 - EFI boot partition (ESP) - size `1GiB`, code `ef00`
 - Partition 2 - root partition - remaining storage
 
+---
 ##### ***Format partitions***
 
 ESP partition (partition #1) is formatted with the `vfat` filesystem, and the Linux root use `btrfs` ...
 
-I am using `/dev/sda1` as EFI and `/dev/sda2` as root partition.
+I am using `/dev/sda1` as EFI, `/dev/sda2`  as root and `/dev/sda3` as home partition.
 
 ```bash
 mkfs.vfat -F32 -n ESP /dev/sda1
 mkfs.btrfs -L archlinux /dev/sda2
+mkfs.ext4 /dev/sda3
 ```
 
 ##### *Mount root device*
@@ -41,6 +46,7 @@ mkfs.btrfs -L archlinux /dev/sda2
 mount /dev/sda2 /mnt
 ```
 
+---
 ##### *Create BTRFS subvolumes*
 
 Each BTRFS filesystem has a top-level subvolume with `ID=5`. A subvolume is a part of the filesystem with its own independent data.
@@ -59,7 +65,6 @@ I create additional subvolumes for more fine-grained control over rolling back t
 
 **Subvolume** -- **Mountpoint**
 
-- `@home` -- `/home` (preserve user data)
 - `@snapshots` -- `/.snapshots`
 - `@cache` -- `/var/cache`
 - `@libvirt` -- `/var/lib/libvirt` (virtual machine images)
@@ -76,6 +81,7 @@ btrfs subvolume create /mnt/@log
 btrfs subvolume create /mnt/@tmp
 ```
 
+---
 ##### <a id="mount"></a> *Mount subvolumes*
 
 Unmount the root partition ...
@@ -112,6 +118,7 @@ mount -o ${sv_opts},subvol=@log /dev/sda2 /mnt/var/log
 mount -o ${sv_opts},subvol=@tmp /dev/sda2 /mnt/var/tmp
 ```
 
+---
 ##### *Mount ESP partition*
 
 ```bash
@@ -119,17 +126,24 @@ mkdir /mnt/efi
 mount /dev/sda1 /mnt/efi
 ```
 
+##### *Mount Home partition*
+
+```
+mount /dev/sda3 /mnt/home
+```
+
+---
 ##### *Install base system*
 
 Select an appropriate [microcode](https://wiki.archlinux.org/title/Microcode) package to load updates and security fixes from processor vendors.
 
-Depending on the processor, set `microcode` for Intel ...
+Depending on the processor, set `microcode` for **Intel** ...
 
 ```bash
 export microcode="intel-ucode"
 ```
 
-For AMD ...
+For **AMD** ...
 
 ```bash
 export microcode="amd-ucode"
@@ -141,12 +155,14 @@ Install the base system ...
 pacstrap /mnt base base-devel ${microcode} btrfs-progs linux-zen linux-zen-headers nano linux-firmware bash-completion htop man-db networkmanager pacman-contrib
 ```
 
+---
 ##### *Fstab*
 
 ```bash
 genfstab -U -p /mnt >> /mnt/etc/fstab
 ```
 
+---
 ## Configure
 
 Chroot into the base system to configure ...
@@ -155,6 +171,7 @@ Chroot into the base system to configure ...
 arch-chroot /mnt /bin/bash
 ```
 
+---
 ##### *Timezone*
 
 Set desired timezone (example: `America/Toronto`) and update the system clock ...
@@ -164,6 +181,7 @@ ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 hwclock --systohc
 ```
 
+---
 ##### *Hostname*
 
 Assign a hostname (example: `arch`) ...
@@ -184,6 +202,7 @@ nano /etc/hosts
 127.0.1.1   arch.localdomain arch
 ```
 
+---
 ##### *Locale*
 
 Set locale (example: `en_US.UTF-8`) ...
@@ -195,6 +214,7 @@ echo "LANG=${locale}" > /etc/locale.conf
 locale-gen
 ```
 
+---
 ##### *Editor*
 
 Set a system-wide default editor (example: `nano`) ...
@@ -203,6 +223,7 @@ Set a system-wide default editor (example: `nano`) ...
 echo "EDITOR=nano" > /etc/environment && echo "VISUAL=nano" >> /etc/environment
 ```
 
+---
 ##### *Root password*
 
 Assign password to `root` ...
@@ -211,6 +232,7 @@ Assign password to `root` ...
 passwd
 ```
 
+---
 ##### *Add user*
 
 Create a user account (example: `ani`) with superuser privileges ...
@@ -226,6 +248,7 @@ Activate `wheel` group access for `sudo` ...
 sed -i "s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/" /etc/sudoers
 ```
 
+---
 ##### *NetworkManager*
 
 Enable `NetworkManager` to start at boot ...
@@ -236,6 +259,7 @@ systemctl enable NetworkManager
 
 Wired network connection is activated by default. Run `nmtui` in the console and choose `Activate a connection` to setup a wireless connection.
 
+---
 ##### *Mkinitcpio*
 
 Set necessary `FILES` and `MODULES` and `HOOKS` in `/etc/mkinitcpio.conf`:
@@ -248,6 +272,7 @@ Add `btrfs` support to mount the root filesystem ...
 MODULES=(btrfs)
 ```
 
+---
 ##### <a id="grub"></a> *Boot loader: GRUB*
 
 Install ...
@@ -276,7 +301,7 @@ Generate the GRUB configuration file ...
 grub-mkconfig -o /efi/grub/grub.cfg
 ```
 
-
+---
 ##### *Reboot*
 
 Exit chroot and reboot ...
@@ -287,7 +312,7 @@ umount -R /mnt
 reboot
 ```
 
-
+---
 #### After the install
 ##### *Package manager*
 
@@ -301,12 +326,14 @@ Color
 ILoveCandy
 ```
 
+---
 ##### *Sound*
 
 ```bash
 sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber alsa-utils
 ```
 
+---
 ##### *AUR*
 
 [Arch User Repository](https://aur.archlinux.org/) (AUR) is a community-driven software package repository.
@@ -322,6 +349,7 @@ makepkg -si
 ```
 
 
+---
 
 # <a id="zram"></a> ==ZRAM swap on Arch Linux==
 
@@ -349,6 +377,7 @@ To enable the device for paging:
 swapon /dev/sdxy
 ```
 
+---
 ##### *Enabling at boot*
 
 To enable the swap partition at boot time:
@@ -361,10 +390,7 @@ UUID=_device_UUID_ none swap defaults 0 0
 
 where the `_device_UUID_` is the [UUID](https://wiki.archlinux.org/title/UUID "UUID") of the swap space.
 
-##### *Hibernation*
-
-In order to use hibernation, you must create a [swap](https://wiki.archlinux.org/title/Swap "Swap") partition or file, [configure the initramfs](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Configure_the_initramfs) so that the resume process will be initiated in early userspace, and specify the location of the swap space in a way that is available to the initramfs, e.g. `HibernateLocation` EFI variable defined by [systemd](https://wiki.archlinux.org/title/Systemd "Systemd") or `resume=` [kernel parameter](https://wiki.archlinux.org/title/Kernel_parameter "Kernel parameter"). These three steps are described in detail below.
-
+---
 ##### *Configure the initramfs*
 
 When using a busybox-based [initramfs](https://wiki.archlinux.org/title/Initramfs "Initramfs"), which is the default, the `resume` hook is required in `/etc/mkinitcpio.conf`. Whether by label or by UUID, the swap partition is referred to with a udev device node, so the `resume` hook must go _after_ the `udev` hook. This example was made starting from the default hook configuration:
@@ -374,6 +400,11 @@ HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont bl
 ```
 
 Remember to [regenerate the initramfs](https://wiki.archlinux.org/title/Regenerate_the_initramfs "Regenerate the initramfs") for these changes to take effect.
+
+---
+##### *Hibernation*
+
+In order to use hibernation, you must create a [swap](https://wiki.archlinux.org/title/Swap "Swap") partition or file, [configure the initramfs](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Configure_the_initramfs) so that the resume process will be initiated in early userspace, and specify the location of the swap space in a way that is available to the initramfs, e.g. `HibernateLocation` EFI variable defined by [systemd](https://wiki.archlinux.org/title/Systemd "Systemd") or `resume=` [kernel parameter](https://wiki.archlinux.org/title/Kernel_parameter "Kernel parameter"). These three steps are described in detail below.
 
 ##### *Pass hibernate location to initramfs*
 
@@ -403,6 +434,7 @@ echo 8:3 > /sys/power/resume
 ```
 If using a swap file, additionally follow the procedures in [#Acquire swap file offset](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Acquire_swap_file_offset).
 
+---
 
 # <a id="kvm"></a> ==Virtualization using KVM + QEMU + libvirt==
 
@@ -414,12 +446,14 @@ If using a swap file, additionally follow the procedures in [#Acquire swap file 
 sudo pacman -S qemu-full qemu-img libvirt virt-install virt-manager virt-viewer edk2-ovmf dnsmasq swtpm guestfs-tools libosinfo tuned
 ```
 
+---
 ##### *Enable the libvirt daemon*
 
 ```shell
 sudo systemctl enable libvirtd.service
 ```
 
+___
 ##### *Verify Host Virtualization*
 
 ```shell
@@ -428,8 +462,11 @@ sudo virt-host-validate qemu
 
 If you receive warnings, proceed to their respective sections. Re-run the above command to check your changes.
 
+___
 ##### *start the default network*
 
 ```shell
 sudo virsh net-start default
 ```
+
+---
