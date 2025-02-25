@@ -6,9 +6,9 @@
 
 ---
 
-# ==**Install Arch Linux**==
+# **Install Arch Linux**
 
-##### ***Update system clock***
+#### **Update system clock**
 
 ```bash
 timedatectl set-ntp true
@@ -16,11 +16,11 @@ timedatectl status
 ```
 
 ---
-##### *Set disk for install*
+#### **Set disk for install**
 
 Identify the internal storage device where Arch Linux will be installed by running `lsblk -f`.
 
-##### *Partition disk*
+#### **Partition disk**
 
 Layout for a single SSD with a GPT partition table that contains two partitions:
 
@@ -28,7 +28,7 @@ Layout for a single SSD with a GPT partition table that contains two partitions:
 - Partition 2 - root partition - remaining storage
 
 ---
-##### ***Format partitions***
+#### **Format partitions**
 
 ESP partition (partition #1) is formatted with the `vfat` filesystem, and the Linux root use `btrfs` ...
 
@@ -40,14 +40,14 @@ mkfs.btrfs -L archlinux /dev/sda2
 mkfs.ext4 /dev/sda3
 ```
 
-##### *Mount root device*
+#### **Mount root device**
 
 ```bash
 mount /dev/sda2 /mnt
 ```
 
 ---
-##### *Create BTRFS subvolumes*
+#### **Create BTRFS subvolumes**
 
 Each BTRFS filesystem has a top-level subvolume with `ID=5`. A subvolume is a part of the filesystem with its own independent data.
 
@@ -82,7 +82,7 @@ btrfs subvolume create /mnt/@tmp
 ```
 
 ---
-##### <a id="mount"></a> *Mount subvolumes*
+#### **<a id="mount"></a> Mount subvolumes**
 
 Unmount the root partition ...
 
@@ -119,21 +119,21 @@ mount -o ${sv_opts},subvol=@tmp /dev/sda2 /mnt/var/tmp
 ```
 
 ---
-##### *Mount ESP partition*
+#### **Mount ESP partition**
 
 ```bash
 mkdir /mnt/efi
 mount /dev/sda1 /mnt/efi
 ```
 
-##### *Mount Home partition*
+#### **Mount Home partition**
 
 ```
 mount /dev/sda3 /mnt/home
 ```
 
 ---
-##### *Install base system*
+#### **Install base system**
 
 Select an appropriate [microcode](https://wiki.archlinux.org/title/Microcode) package to load updates and security fixes from processor vendors.
 
@@ -156,7 +156,7 @@ pacstrap /mnt base base-devel ${microcode} btrfs-progs linux-zen linux-zen-heade
 ```
 
 ---
-##### *Fstab*
+#### **Fstab**
 
 ```bash
 genfstab -U -p /mnt >> /mnt/etc/fstab
@@ -172,7 +172,7 @@ arch-chroot /mnt /bin/bash
 ```
 
 ---
-##### *Timezone*
+#### **Timezone**
 
 Set desired timezone (example: `America/Toronto`) and update the system clock ...
 
@@ -182,7 +182,7 @@ hwclock --systohc
 ```
 
 ---
-##### *Hostname*
+#### **Hostname**
 
 Assign a hostname (example: `arch`) ...
 
@@ -203,7 +203,7 @@ nano /etc/hosts
 ```
 
 ---
-##### *Locale*
+#### **Locale**
 
 Set locale (example: `en_US.UTF-8`) ...
 
@@ -215,7 +215,7 @@ locale-gen
 ```
 
 ---
-##### *Editor*
+#### **Editor**
 
 Set a system-wide default editor (example: `nano`) ...
 
@@ -224,7 +224,7 @@ echo "EDITOR=nano" > /etc/environment && echo "VISUAL=nano" >> /etc/environment
 ```
 
 ---
-##### *Root password*
+#### **Root password**
 
 Assign password to `root` ...
 
@@ -233,7 +233,7 @@ passwd
 ```
 
 ---
-##### *Add user*
+#### **Add user**
 
 Create a user account (example: `ani`) with superuser privileges ...
 
@@ -249,7 +249,7 @@ sed -i "s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/" /etc/sudoers
 ```
 
 ---
-##### *NetworkManager*
+#### **NetworkManager**
 
 Enable `NetworkManager` to start at boot ...
 
@@ -260,11 +260,11 @@ systemctl enable NetworkManager
 Wired network connection is activated by default. Run `nmtui` in the console and choose `Activate a connection` to setup a wireless connection.
 
 ---
-##### *Mkinitcpio*
+#### **Mkinitcpio**
 
 Set necessary `FILES` and `MODULES` and `HOOKS` in `/etc/mkinitcpio.conf`:
 
-***MODULES***
+#### MODULES
 
 Add `btrfs` support to mount the root filesystem ...
 
@@ -273,7 +273,7 @@ MODULES=(btrfs)
 ```
 
 ---
-##### <a id="grub"></a> *Boot loader: GRUB*
+#### **<a id="grub"></a> Boot loader: GRUB**
 
 Install ...
 
@@ -281,7 +281,7 @@ Install ...
 pacman -S grub efibootmgr
 ```
 
-##### *Install boot loader*
+#### **Install boot loader**
 
 Install GRUB in the ESP ...
 
@@ -302,7 +302,7 @@ grub-mkconfig -o /efi/grub/grub.cfg
 ```
 
 ---
-##### *Reboot*
+#### **Reboot**
 
 Exit chroot and reboot ...
 
@@ -313,8 +313,8 @@ reboot
 ```
 
 ---
-#### After the install
-##### *Package manager*
+#### **After the install**
+#### **Package manager**
 
 Bring some color and the spirit of _Pacman_ to `pacman` with `Color` and `ILoveCandy` options.
 
@@ -327,14 +327,14 @@ ILoveCandy
 ```
 
 ---
-##### *Sound*
+#### **Sound**
 
 ```bash
 sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber alsa-utils
 ```
 
 ---
-##### *AUR*
+#### **AUR**
 
 [Arch User Repository](https://aur.archlinux.org/) (AUR) is a community-driven software package repository.
 
@@ -351,34 +351,34 @@ makepkg -si
 
 ---
 
-# <a id="zram"></a> ==ZRAM swap on Arch Linux==
+# <a id="zram"></a> ZRAM swap on Arch Linux
 
 Swap space can take the form of a disk partition or a file. Users may create a swap space during installation or at any later time as desired. Swap space can be used for two purposes, to extend the virtual memory beyond the installed physical memory (RAM), and also for [suspend-to-disk](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate "Power management/Suspend and hibernate") support.
 
 To check swap status, use:
 
-```
+```bash
 swapon --show
 ```
 
-##### *Swap partition*
+#### **Swap partition**
 
 A [swap partition](https://wiki.archlinux.org/title/Partitioning#Swap "Partitioning") can be created with most GNU/Linux [partitioning tools](https://wiki.archlinux.org/title/Partitioning_tools "Partitioning tools").
 
 To set up a partition as Linux swap area, the [mkswap(8)](https://man.archlinux.org/man/mkswap.8) command is used. For example:
 
-```
+```bash
 mkswap /dev/sdxy
 ```
 
 To enable the device for paging:
 
-```
+```bash
 swapon /dev/sdxy
 ```
 
 ---
-##### *Enabling at boot*
+#### **Enabling at boot**
 
 To enable the swap partition at boot time:
 
@@ -391,7 +391,7 @@ UUID=_device_UUID_ none swap defaults 0 0
 where the `_device_UUID_` is the [UUID](https://wiki.archlinux.org/title/UUID "UUID") of the swap space.
 
 ---
-##### *Configure the initramfs*
+#### **Configure the initramfs**
 
 When using a busybox-based [initramfs](https://wiki.archlinux.org/title/Initramfs "Initramfs"), which is the default, the `resume` hook is required in `/etc/mkinitcpio.conf`. Whether by label or by UUID, the swap partition is referred to with a udev device node, so the `resume` hook must go _after_ the `udev` hook. This example was made starting from the default hook configuration:
 
@@ -402,11 +402,11 @@ HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont bl
 Remember to [regenerate the initramfs](https://wiki.archlinux.org/title/Regenerate_the_initramfs "Regenerate the initramfs") for these changes to take effect.
 
 ---
-##### *Hibernation*
+#### **Hibernation**
 
 In order to use hibernation, you must create a [swap](https://wiki.archlinux.org/title/Swap "Swap") partition or file, [configure the initramfs](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Configure_the_initramfs) so that the resume process will be initiated in early userspace, and specify the location of the swap space in a way that is available to the initramfs, e.g. `HibernateLocation` EFI variable defined by [systemd](https://wiki.archlinux.org/title/Systemd "Systemd") or `resume=` [kernel parameter](https://wiki.archlinux.org/title/Kernel_parameter "Kernel parameter"). These three steps are described in detail below.
 
-##### *Pass hibernate location to initramfs*
+#### **Pass hibernate location to initramfs**
 
 he [kernel parameter](https://wiki.archlinux.org/title/Kernel_parameter "Kernel parameter") `resume=_swap_device_` can be used, where _swap_device_ follows the [persistent block device naming](https://wiki.archlinux.org/title/Persistent_block_device_naming "Persistent block device naming"). For example:
 
@@ -421,7 +421,7 @@ GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=4209c845-f495-4c43-8a03-5363dd433153 qui
 
 And then automatically re-generate the `grub.cfg` file with:
 
-```
+```bash
 grub-mkconfig -o /boot/efi/grub.cfg
 ```
 
@@ -429,32 +429,32 @@ The kernel parameters will only take effect after rebooting. To hibernate right 
 
 For example, if the swap device is `8:3`:
 
-```
+```bash
 echo 8:3 > /sys/power/resume
 ```
 If using a swap file, additionally follow the procedures in [#Acquire swap file offset](https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Acquire_swap_file_offset).
 
 ---
 
-# <a id="kvm"></a> ==Virtualization using KVM + QEMU + libvirt==
+# <a id="kvm"></a> Virtualization using KVM + QEMU + libvirt
 
 [KVM](https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine) (Kernel-based Virtual Machine) is built into the Linux kernel and handles the CPU and memory details. [QEMU](https://en.wikipedia.org/wiki/QEMU) (Quick EMUlator) emulates the various hardware components of a physical machine. Finally, [libvirt](https://wiki.archlinux.org/title/Libvirt) provides the tools for creating and managing VMs. I use `virt-manager` and `virsh` as graphical and console interfaces respectively.
 
-##### *Install QEMU, libvirt, viewers, and tools*
+#### **Install QEMU, libvirt, viewers, and tools**
 
 ```
 sudo pacman -S qemu-full qemu-img libvirt virt-install virt-manager virt-viewer edk2-ovmf dnsmasq swtpm guestfs-tools libosinfo tuned
 ```
 
 ---
-##### *Enable the libvirt daemon*
+#### **Enable the libvirt daemon**
 
 ```shell
 sudo systemctl enable libvirtd.service
 ```
 
 ___
-##### *Verify Host Virtualization*
+#### **Verify Host Virtualization**
 
 ```shell
 sudo virt-host-validate qemu
@@ -463,7 +463,7 @@ sudo virt-host-validate qemu
 If you receive warnings, proceed to their respective sections. Re-run the above command to check your changes.
 
 ___
-##### *start the default network*
+#### **start the default network**
 
 ```shell
 sudo virsh net-start default
