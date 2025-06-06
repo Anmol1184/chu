@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+echo "_________________________________________________________________________________________"
+echo "Starting PHP Server"
+php -S localhost:8080 -t /home/ani/Documents/TVs/ &
+sleep 1
+echo "_________________________________________________________________________________________"
+echo "Starting JioTV Server"
+/home/ani/.jiotv_go/bin/jiotv_go bg start --config /home/ani/.jiotv_go/bin/jiotv_go.toml
+echo "_________________________________________________________________________________________"

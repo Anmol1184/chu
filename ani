@@ -1,0 +1,2 @@
+# min hour dom month dow command
+@reboot sleep 5 && /usr/bin/bash /home/ani/.local/bin/tvs > /home/ani/Documents/logs/reboot.txt 2>&1
